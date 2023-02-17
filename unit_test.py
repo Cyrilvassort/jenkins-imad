@@ -1,45 +1,42 @@
-import pytest
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from pymongo import MongoClient
+import unittest
+import requests
 
-app = Flask(__name__)
-CORS(app)
-client = MongoClient('127.0.0.1:8080')
-db = client["db"]
-col = db["employees"]
+class TestEmployeeAPI(unittest.TestCase):
+    
+    base_url = "http://localhost:8080/api/v1"
+    
+    def test_get_employees(self):
+        response = requests.get(f"{self.base_url}/employees")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.json(), list)
+    
+    def test_add_employee(self):
+        new_employee = {
+            "firstName": "Jean",
+            "lastName": "Lasalle",
+            "emailId": "jean.lasalle@laposte.net"
+        }
+        response = requests.post(f"{self.base_url}/employees", json=new_employee)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.json(), dict)
+    
+    def test_update_employee(self):
+        updated_employee = {
+            "firstName": "Jeanne",
+            "lastName": "Lasalle",
+            "emailId" : "jeanne.lasalle@laposte.net"
+        }
+        employee_id = 1
+        response = requests.put(f"{self.base_url}/employees/{employee_id}", json=updated_employee)
+        self.assertEqual(response.status_code, 204)
+    
+    def test_delete_employee(self):
+        employee_id = 1
+        response = requests.delete(f"{self.base_url}/employees/{employee_id}")
+        self.assertEqual(response.status_code, 204)
 
-
-@pytest.fixture
-def app_fixture():
-    return app
-
-
-@pytest.fixture
-def client_fixture():
-    client = app.test_client()
-    yield client
-
-
-# Test get route
-def test_get_route(client_fixture):
-    response = client_fixture.get('/api/v1/employees')
-    assert response.status_code == 200
-
-
-# Test post route
-def test_post_route(client_fixture):
-    response = client_fixture.post('/api/v1/employees')
-    assert response.status_code == 200
-
-
-# Test delete route
-def test_delete_route(client_fixture):
-    response = client_fixture.delete('/api/v1/employees/<int:employee_id>')
-    assert response.status_code == 200
-
-
-# Test put route
-def test_put_route(client_fixture):
-    response = client_fixture.put('/api/v1/employees/<int:employee_id>')
-    assert response.status_code == 200
+if __name__ == "__main__":
+    test_order = ["test_get_employees", "test_add_employee", "test_update_employee", "test_delete_employee"] # important so the delete test will work
+    loader = unittest.TestLoader()
+    loader.sortTestMethodsUsing = lambda x, y: test_order.index(x) - test_order.index(y)
+    unittest.main(testLoader=loader, verbosity=2)
