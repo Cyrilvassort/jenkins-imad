@@ -13,24 +13,28 @@ class EmployeeAPI:
     def __init__(self):
         pass
     
-    @staticmethod
-    @app.route('/api/v1/employees', methods=['GET', 'POST'])
-    def employees():
-        if request.method == 'GET':
-            cursor = col.find({}, {'_id': 0})
+@staticmethod
+@app.route('/api/v1/employees', methods=['GET', 'POST'])
+def employees():
+    if request.method == 'GET':
+        cursor = col.find({}, {'_id': 0})
+        try:
             employees_list = [employee for employee in cursor]
-            return jsonify(employees_list), 200
+        except ValueError as err:
+            return jsonify({'message': 'Erreur: {}'.format(str(err))}), 500
+        return jsonify(employees_list), 200
 
-        if request.method == 'POST':
-            data = request.get_json()
-            cursor = col.find({}, {'_id': 0})
-            try:
-                employee_id = max([employee['id'] for employee in cursor]) + 1
-            except ValueError:
-                employee_id = 1
-            data['id'] = employee_id
-            col.insert_one(data)
-            return jsonify(data), 200
+    if request.method == 'POST':
+        data = request.get_json()
+        cursor = col.find({}, {'_id': 0})
+        try:
+            employee_id = max([employee['id'] for employee in cursor]) + 1
+        except ValueError:
+            employee_id = 1
+        data['id'] = employee_id
+        col.insert_one(data)
+        return jsonify(data), 200
+
 
     @staticmethod
     @app.route('/api/v1/employees/<int:employee_id>', methods=['GET', 'DELETE', 'PUT'])
