@@ -17,7 +17,7 @@ services:
     image: backend-python
     container_name: backend-python
     build:
-      context: ./backend-Python
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - 8080:8080

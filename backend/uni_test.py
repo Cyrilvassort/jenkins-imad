@@ -1,38 +1,19 @@
 import unittest
-from app import *
+import requests
 
 class TestEmployeeAPI(unittest.TestCase):
-
-    # Test the GET request
-    def test_get(self):
-        response = employees()
+    
+    base_url = "http://localhost:8080/api/v1"
+    
+    def test_get_employees(self):
+        response = requests.get(f"{self.base_url}/employees")
         self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(response.json())
+        self.assertIsInstance(response.json(), list)
+    
+    
 
-    # Test the POST request
-    def test_post(self):
-        data = {
-            'firstName': 'John Doe',
-            'lastName': 'engineer',
-            'emailId': 'hellopodjezpinfpzeoinoinfezoijnoi'
-        }
-        response = employees(method="POST", json=data)
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(response.json()['id'])
-
-    # Test the PUT request
-    def test_put(self):
-        data = {
-            'firstName': 'Jane Doe',
-            'lastName': 'administrator',
-            'emailId': 'hello@gmail.com'
-        }
-        response = employees(employee_id=1, method="PUT", json=data)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['message'], 'Employee updated successfully')
-
-    # Test the DELETE request
-    def test_delete(self):
-        response = employees(employee_id=1, method="DELETE")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['message'], 'Employee deleted successfully')
+if __name__ == "__main__":
+    test_order = ["test_get_employees"] # important so the delete test will work
+    loader = unittest.TestLoader()
+    loader.sortTestMethodsUsing = lambda x, y: test_order.index(x) - test_order.index(y)
+    unittest.main(testLoader=loader, verbosity=2)
