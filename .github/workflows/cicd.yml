@@ -22,7 +22,7 @@ jobs:
       run: |
         pwd && ls
         python -m pip install --upgrade pip
-        cd backend-Python && pip install -r requirements.txt
+        cd backend && pip install -r requirements.txt
     
     - name: Set up MongoDB
       run: sudo docker run -e MONGO_INITDB_ROOT_USERNAME='root' -e MONGO_INITDB_ROOT_PASSWORD='example' -e MONGO_INITDB_DATABASE='backend' -d -p 27017:27017 mongo:latest
@@ -30,7 +30,7 @@ jobs:
     - name: Run the API and tests
       uses: BerniWittmann/background-server-action@v1
       with:
-        cwd: backend-Python
+        cwd: backend
         command: python uni_test.py
         start: flask run --host=0.0.0.0 --port=8080
         wait-on: 'http://localhost:8080/api/v1/employees'
@@ -52,7 +52,7 @@ jobs:
         env:
           REPO: self
           BRANCH: dev # The branch name where you want to push the assets
-          FOLDER: backend-Python # The directory where your assets are generated
+          FOLDER: backend # The directory where your assets are generated
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
           MESSAGE: "Build: ({sha}) {msg} passed the tests with success" # The commit message
         
