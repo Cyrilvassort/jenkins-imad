@@ -11,7 +11,7 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set the environment variable for Flask to run in production
-ENV FLASK_ENV=production
+ENV FLASK_ENV=Development
 
 # Expose port 8080 to the host machine
 EXPOSE 8080
