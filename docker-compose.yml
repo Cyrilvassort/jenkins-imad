@@ -1,35 +1,43 @@
-version: '3.1'
-
+---
+version: "2.1"
 services:
-  front-angular:
+  frontend-angular:
+    image: frontend-angular
+    container_name: frontend-angular
     build:
-      context: front-angular/
+      context: ./angular
       dockerfile: Dockerfile
     ports:
-      - "8090:80"
+      - 4200:4200
+      - 80:80
+    restart: unless-stopped
+    
   
-  backend:
+  backend-python:
+    image: backend-python
+    container_name: backend-python
     build:
-      context: backend-python/
+      context: ./backend-Python
       dockerfile: Dockerfile
     ports:
-    - "8080:8080"
+      - 8080:8080
+    restart: unless-stopped
 
   mongo:
-      image: mongo:latest
-      restart: always
-      container_name: mongo
-      environment:
-        MONGO_INITDB_ROOT_USERNAME: root
-        MONGO_INITDB_ROOT_PASSWORD: example
-        MONGO_INITDB_DATABASE: backend
-      ports:
-        - "27017:27017"
-      volumes: 
-        - "mongo_db:/data/db"
+    image: mongo
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: backend
+
 
   mongo-express:
     image: mongo-express
+    container_name: mongo-express
     restart: always
     ports:
       - 8081:8081
@@ -37,8 +45,3 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
-
-volumes:
-  mongo_db:
-
-
