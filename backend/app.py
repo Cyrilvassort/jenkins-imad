@@ -12,16 +12,18 @@ col = db["employees"]
 class EmployeeAPI:
     def __init__(self):
         pass
-    
+
 @staticmethod
 @app.route('/api/v1/employees', methods=['GET', 'POST'])
 def employees():
     if request.method == 'GET':
-        cursor = col.find({}, {'_id': 0})
+        employees_list = []
         try:
-            employees_list = [employee for employee in cursor]
+            cursor = col.find({}, {'_id': 0})
+            for employee in cursor:
+                employees_list.append(employee)
         except ValueError as err:
-            return jsonify({'message': 'Erreur: {}'.format(str(err))}), 500
+            return jsonify({'message': 'Erreur : {}'.format(str(err))}), 500
         return jsonify(employees_list), 200
 
     if request.method == 'POST':
@@ -34,6 +36,7 @@ def employees():
         data['id'] = employee_id
         col.insert_one(data)
         return jsonify(data), 200
+
 
 
     @staticmethod
